@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+#
+echo "this script will automate the configuration of yello dog update modifier on a REDHAT ENTERPRISE LINUX SYSTEM 6.0"
+echo "please refer the the usage guide for a sccussful configuration of YUM" 
+
+echo "creating a repository director ......."
+mkdir /repo
+echo ""
+echo "mounting RHEL 6.0  ......."
+mount -rvf /root/Desktop/rhel* /mnt 
+
+echo ""
+cd /mnt 
+
+echo "" 
+echo "copying package and configuration files to repository directory ......."
+cp -rvf Server Packages /repo
+
+echo ""
+echo "creating repository directory file ....... "
+cat <<EOF > /etc/yum.repos.d/base.repo 
+[base]
+name=base
+baseurl=file:///repo/Packages 
+enable=0
+gpgcheck=1
+EOF
+
+echo ""
+echo "importing keys ......."
+rpm --import /mnt/RPM-GPG*
+
+echo ""
+echo "installing required packages ......."
+rpm -ivh /mnt/Packages/createrepo*
+rpm -ivh /mnt/Packages/deltarpm*
+rpm -ivh /mnt/Packages/python-deltarpm*
+
+echo ""
+echo "prepairing repository ......."
+createrepo -v /repo/Packages
+
+echo ""
+yum clean all
+
+echo ""
+yum list all 
+
+
